@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -11,234 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="<%=request.getContextPath()%>/css/list.css">
     <style>
-        /* Inline styles as backup */
-        .user-management-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            margin: 0;
-            font-size: 2.5em;
-            font-weight: 300;
-        }
-        
-        .header p {
-            margin: 10px 0 0 0;
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-        
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 5px;
-        }
-        
-        .tab {
-            padding: 12px 24px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-        
-        .tab.active {
-            background: #667eea;
-            color: white;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .user-table {
-            width: 100%;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-        
-        .user-table table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .user-table th {
-            background: #667eea;
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 500;
-        }
-        
-        .user-table td {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .user-table tr:hover {
-            background: #f8f9fa;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #667eea;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-        
-        .user-details h4 {
-            margin: 0;
-            font-weight: 500;
-        }
-        
-        .user-details p {
-            margin: 2px 0 0 0;
-            color: #666;
-            font-size: 0.9em;
-        }
-        
-        .badge {
-            padding: 4px 8px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: 500;
-        }
-        
-        .badge-admin {
-            background: #ff6b6b;
-            color: white;
-        }
-        
-        .badge-staff {
-            background: #4ecdc4;
-            color: white;
-        }
-        
-        .badge-customer {
-            background: #45b7d1;
-            color: white;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.85em;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-edit {
-            background: #ffeaa7;
-            color: #2d3436;
-        }
-        
-        .btn-delete {
-            background: #ff7675;
-            color: white;
-        }
-        
-        .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: #6c757d;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-        }
-        
-        .back-btn:hover {
-            background: #5a6268;
-            transform: translateY(-1px);
-        }
-        
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        
-        .stat-card i {
-            font-size: 2.5em;
-            margin-bottom: 15px;
-        }
-        
-        .stat-card.admin { border-top: 4px solid #ff6b6b; }
-        .stat-card.staff { border-top: 4px solid #4ecdc4; }
-        .stat-card.customer { border-top: 4px solid #45b7d1; }
-        
-        .stat-number {
-            font-size: 2em;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #666;
-        }
-        
-        .empty-state i {
-            font-size: 4em;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
+
     </style>
 </head>
 <body>
@@ -273,6 +46,7 @@
             </div>
         </div>
         
+        <!-- Rest of your JSP content remains the same -->
         <!-- Tabs -->
         <div class="tabs">
             <div class="tab active" onclick="showTab('customers')">
@@ -313,13 +87,25 @@
                                                                  alt="${customer.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
                                                         </c:when>
                                                         <c:otherwise>
-                                                            ${fn:substring(customer.name, 0, 1)}${fn:substring(customer.name, fn:indexOf(customer.name, ' ') + 1, fn:indexOf(customer.name, ' ') + 2)}
+                                                            <c:set var="nameParts" value="${fn:split(customer.name, ' ')}" />
+                                                            <c:choose>
+                                                                <c:when test="${fn:length(nameParts) >= 2}">
+                                                                    ${fn:substring(nameParts[0], 0, 1)}${fn:substring(nameParts[fn:length(nameParts)-1], 0, 1)}
+                                                                </c:when>
+                                                                <c:when test="${fn:length(nameParts) == 1}">
+                                                                    ${fn:substring(customer.name, 0, 1)}
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    U
+                                                                </c:otherwise>
+                                                            </c:choose>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </div>
                                                 <div class="user-details">
                                                     <h4>${customer.name}</h4>
                                                     <p>ID: ${customer.customerId}</p>
+                                                    <span class="badge badge-customer">Customer</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -388,7 +174,18 @@
                                                                  alt="${staff.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
                                                         </c:when>
                                                         <c:otherwise>
-                                                            ${fn:substring(staff.name, 0, 1)}${fn:substring(staff.name, fn:indexOf(staff.name, ' ') + 1, fn:indexOf(staff.name, ' ') + 2)}
+                                                            <c:set var="nameParts" value="${fn:split(staff.name, ' ')}" />
+                                                            <c:choose>
+                                                                <c:when test="${fn:length(nameParts) >= 2}">
+                                                                    ${fn:substring(nameParts[0], 0, 1)}${fn:substring(nameParts[fn:length(nameParts)-1], 0, 1)}
+                                                                </c:when>
+                                                                <c:when test="${fn:length(nameParts) == 1}">
+                                                                    ${fn:substring(staff.name, 0, 1)}
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    S
+                                                                </c:otherwise>
+                                                            </c:choose>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </div>
@@ -464,7 +261,18 @@
                                                                  alt="${admin.name}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
                                                         </c:when>
                                                         <c:otherwise>
-                                                            ${fn:substring(admin.name, 0, 1)}${fn:substring(admin.name, fn:indexOf(admin.name, ' ') + 1, fn:indexOf(admin.name, ' ') + 2)}
+                                                            <c:set var="nameParts" value="${fn:split(admin.name, ' ')}" />
+                                                            <c:choose>
+                                                                <c:when test="${fn:length(nameParts) >= 2}">
+                                                                    ${fn:substring(nameParts[0], 0, 1)}${fn:substring(nameParts[fn:length(nameParts)-1], 0, 1)}
+                                                                </c:when>
+                                                                <c:when test="${fn:length(nameParts) == 1}">
+                                                                    ${fn:substring(admin.name, 0, 1)}
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    A
+                                                                </c:otherwise>
+                                                            </c:choose>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </div>
@@ -547,11 +355,6 @@
                 }
             });
         });
-        
-        console.log('User Management Page Loaded');
-        console.log('Customers: ${not empty customers ? customers.size() : 0}');
-        console.log('Staff: ${not empty staffMembers ? staffMembers.size() : 0}');
-        console.log('Admins: ${not empty administrator ? administrator.size() : 0}');
     </script>
 </body>
 </html>

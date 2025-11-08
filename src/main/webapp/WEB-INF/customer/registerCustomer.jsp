@@ -64,7 +64,15 @@
 
                 <div class="input-group">
                     <label for="phone-number">Phone Number</label>
-                    <input type="tel" id="phone-number" name="phone-number" placeholder="+94 123456789" required>
+                    <div class="phone-input-container">
+                        <span class="phone-prefix">+94 </span>
+                        <input type="tel" id="phone-number" name="phone-number" 
+                               placeholder="123456789" 
+                               pattern="[0-9]{9}" 
+                               maxlength="9"
+                               title="Please enter exactly 9 digits (123456789)" required>
+                    </div>
+                    <div class="phone-hint">Enter 9 digits without the country code</div>
                 </div>
 
                 <div class="input-group">
@@ -97,6 +105,9 @@
 
             var email = document.getElementById("email").value;
             var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            var phoneNumber = document.getElementById("phone-number").value;
+            var phonePattern = /^[0-9]{9}$/;
 
             if (!passwordPattern.test(password)) {
                 alert("Password must contain at least 8 characters, including a number, lowercase and uppercase letter!");
@@ -113,8 +124,18 @@
                 return false;
             }
 
+            if (!phonePattern.test(phoneNumber)) {
+                alert("Invalid phone number. Please enter exactly 9 digits.");
+                return false;
+            }
+
             return true;
         }
+
+        // Phone number input restriction - only numbers
+        document.getElementById('phone-number').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
 
         // Attach validation to form submit
         document.querySelector('.register-form').addEventListener('submit', function(e) {

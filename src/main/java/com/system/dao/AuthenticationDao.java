@@ -10,6 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 
@@ -54,7 +56,7 @@ public class AuthenticationDao {
 		try(Connection conn = DBConnectionFactory.getConnection()) {
 			String adminId = generateAdminId(conn);
 			if (adminId == null) {
-				throw new ServletException("[ERROR] Failed to generate Staff Id!");
+				throw new ServletException("[ERROR] Failed to generate Admin Id!");
 			}
 			
 			if(emailExists(conn, admin.getEmail())) {
@@ -90,7 +92,7 @@ public class AuthenticationDao {
 		try(Connection conn = DBConnectionFactory.getConnection()) {
 			String customerId = generateCustomerId(conn);
 			if (customerId == null) {
-				throw new ServletException("[ERROR] Failed to generate Staff Id!");
+				throw new ServletException("[ERROR] Failed to generate Customer Id!");
 			}
 			
 			if(emailExists(conn, customer.getEmail())) {
@@ -208,6 +210,95 @@ public class AuthenticationDao {
 		
 		return null;
 	}
-	
+
+	public List<Customer> getAllCustomers() throws Exception {
+	    List<Customer> customers = new ArrayList<>();
+	    String query = "SELECT * FROM users WHERE role = 'customer'";
+	    
+	    try(Connection conn = DBConnectionFactory.getConnection();
+	        PreparedStatement ps = conn.prepareStatement(query);
+	        ResultSet rs = ps.executeQuery()) {
+	        while(rs.next()) {
+	            Customer customer = new Customer(
+	                rs.getString("name"),           
+	                rs.getString("profile_picture"), 
+	                rs.getString("email"),         
+	                rs.getString("password"),      
+	                rs.getString("address"),       
+	                rs.getString("phone_number"),   
+	                rs.getString("customer_id"),   
+	                rs.getTimestamp("created_at"),  
+	                rs.getTimestamp("updated_at")  
+	            );
+	            customers.add(customer);
+	        }
+	        System.out.println("[DEBUG] Retrieved " + customers.size() + " customers from database");
+	    } catch(SQLException e) {
+	         e.printStackTrace();
+	         System.out.println("[ERROR]: Failed to retrieve customers: " + e.getMessage());
+	    }
+	    return customers;
+	}
+
+	public List<Staff> getAllStaff() throws Exception {
+	    List<Staff> staffMembers = new ArrayList<>();
+	    String query = "SELECT * FROM users WHERE role = 'staff'";
+	    
+	    try(Connection conn = DBConnectionFactory.getConnection();
+	        PreparedStatement ps = conn.prepareStatement(query);
+	        ResultSet rs = ps.executeQuery()) {
+	        while(rs.next()) {
+	            Staff staff = new Staff(
+	                rs.getString("name"),           
+	                rs.getString("profile_picture"), 
+	                rs.getString("email"),         
+	                rs.getString("password"),      
+	                rs.getString("address"),       
+	                rs.getString("phone_number"),   
+	                rs.getString("staff_id"),   // Fixed: make sure this column exists  
+	                rs.getTimestamp("created_at"),  
+	                rs.getTimestamp("updated_at")  
+	            );
+	            staffMembers.add(staff);
+	        }
+	        System.out.println("[DEBUG] Retrieved " + staffMembers.size() + " staff members from database");
+	    } catch(SQLException e) {
+	         e.printStackTrace();
+	         System.out.println("[ERROR]: Failed to retrieve staff members: " + e.getMessage());
+	    }
+	    return staffMembers;
+	}
+
+	public List<Admin> getAllAdmin() throws Exception {
+	    List<Admin> administrator = new ArrayList<>();
+	    String query = "SELECT * FROM users WHERE role = 'admin'";
+	    
+	    try(Connection conn = DBConnectionFactory.getConnection();
+	        PreparedStatement ps = conn.prepareStatement(query);
+	        ResultSet rs = ps.executeQuery()) {
+	        while(rs.next()) {
+	            Admin admin = new Admin(
+	                rs.getString("name"),           
+	                rs.getString("profile_picture"), 
+	                rs.getString("email"),         
+	                rs.getString("password"),      
+	                rs.getString("address"),       
+	                rs.getString("phone_number"),   
+	                rs.getString("admin_id"),   // Fixed: make sure this column exists  
+	                rs.getTimestamp("created_at"),  
+	                rs.getTimestamp("updated_at")  
+	            );
+	            administrator.add(admin);
+	        }
+	        System.out.println("[DEBUG] Retrieved " + administrator.size() + " admins from database");
+	    } catch(SQLException e) {
+	         e.printStackTrace();
+	         System.out.println("[ERROR]: Failed to retrieve administrators: " + e.getMessage());
+	    }
+	    return administrator;
+	}
+
 	
 }
+
+

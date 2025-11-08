@@ -11,321 +11,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/myAdminProfile.css">
 
-        body {
-            background: #ffffff;
-            color: #2c3e50;
-            line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .myProfile-container {
-            display: flex;
-            width: 100%;
-            max-width: 1400px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            min-height: 800px;
-        }
-
-        /* Image Section */
-        .img-section {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        }
-
-        .img-section img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.9;
-        }
-
-        .img-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(44, 62, 80, 0.85) 0%, rgba(52, 73, 94, 0.85) 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .img-overlay h1 {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .img-overlay p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 10px;
-        }
-
-        .welcome-text {
-            font-size: 1.4rem;
-            margin-top: 20px;
-            font-weight: 600;
-            color: #3498db;
-        }
-
-        /* Content Section */
-        .content-section {
-            flex: 1.5;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            background: white;
-            overflow-y: auto;
-            max-height: 800px;
-        }
-
-        .content-header {
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .content-header h1 {
-            font-size: 2.2rem;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .content-header p {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-        }
-
-        /* Form Styles */
-        .update-profile-data {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 15px;
-        }
-
-        .input-group label {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #2c3e50;
-            font-size: 0.95rem;
-        }
-
-        .input-group input {
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #3498db;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-        }
-
-        .input-group input[readonly] {
-            background: #e9ecef;
-            color: #6c757d;
-            cursor: not-allowed;
-        }
-
-        .input-group input[type="file"] {
-            padding: 10px;
-            background: white;
-        }
-
-        /* Change Password Section */
-        .Change-password {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 12px;
-            border-left: 4px solid #3498db;
-            margin: 20px 0;
-        }
-
-        .Change-password h3 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .Change-password h3 i {
-            color: #3498db;
-        }
-
-        /* Buttons */
-        .btn-submit, .btn-change-password {
-            padding: 14px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-submit {
-            background: #2ecc71;
-            color: white;
-            margin-top: 10px;
-        }
-
-        .btn-submit:hover {
-            background: #27ae60;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
-        }
-
-        .btn-change-password {
-            background: #3498db;
-            color: white;
-            width: 100%;
-            margin-top: 15px;
-        }
-
-        .btn-change-password:hover {
-            background: #2980b9;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-        }
-
-        /* Back Button */
-        .back-section {
-            margin-top: 30px;
-            text-align: center;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 25px;
-            background: #95a5a6;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .back-btn:hover {
-            background: #7f8c8d;
-            transform: translateY(-2px);
-        }
-
-        /* Profile Picture Preview */
-        .profile-picture-preview {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .profile-picture-preview img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid #3498db;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 968px) {
-            .myProfile-container {
-                flex-direction: column;
-                max-width: 600px;
-            }
-            
-            .img-section {
-                min-height: 300px;
-            }
-            
-            .content-section {
-                padding: 30px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-            
-            .content-section {
-                padding: 20px;
-            }
-            
-            .Change-password {
-                padding: 20px;
-            }
-            
-            .content-header h1 {
-                font-size: 1.8rem;
-            }
-            
-            .img-overlay h1 {
-                font-size: 2rem;
-            }
-        }
-
-        /* Success/Error Messages */
-        .message {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-    </style>
 </head>
 <body>
 
@@ -407,8 +94,13 @@
 
                 <div class="input-group">
                     <label for="phoneNumber">Phone Number</label>
-                    <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="+94 123456789" required
+                    <input type="tel" id="phoneNumber" name="phoneNumber" 
+                           placeholder="+94 77 123 4567" 
+                           pattern="\+94\s[0-9]{9}" 
+                           title="Phone number must start with +94 followed by a space and 9 digits (e.g., +94 771234567)"
+                           required
                            value="<%= request.getAttribute("adminPhone") != null ? request.getAttribute("adminPhone") : "" %>">
+                    <small>Format: +94 followed by a space and 9 digits (e.g., +94 771234567)</small>
                 </div>
 
                 <button type="submit" class="btn-submit">
@@ -423,8 +115,15 @@
                     <input type="hidden" name="action" value="changeMyPassword">
                     
                     <div class="input-group">
-                        <label for="current-password">Current Password</label>
-                        <input type="password" id="current-password" name="current-password" placeholder="Enter your current password" required>
+                        <label for="current-password-display">Current Password (System Generated)</label>
+                        <input type="text" id="current-password-display" name="current-password-display" 
+                               value="********" readonly style="background-color: #f8f9fa; color: #6c757d;">
+                        <small>This is your system-generated temporary password. You cannot change this field.</small>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="current-password">Verify Current Password</label>
+                        <input type="password" id="current-password" name="current-password" placeholder="Enter your current password to verify" required>
                     </div>
                     
                     <div class="input-group">
@@ -468,11 +167,61 @@
         }
     }
 
+    // Phone number formatting with space after +94
+    document.getElementById('phoneNumber').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, ''); // Remove all spaces first
+        
+        // If it starts with 94, convert to +94
+        if (value.startsWith('94')) {
+            value = '+' + value;
+        }
+        // If it doesn't start with +94 but has numbers, ensure +94
+        else if (value.length > 0 && !value.startsWith('+94')) {
+            value = '+94' + value.replace(/^\+?94?/, '');
+        }
+        
+        // Limit to 12 characters total (+94 + 9 digits = 12)
+        if (value.length > 12) {
+            value = value.substring(0, 12);
+        }
+        
+        // Add space after +94 if we have more than 3 characters
+        if (value.length > 3) {
+            value = value.substring(0, 3) + ' ' + value.substring(3);
+        }
+        
+        e.target.value = value;
+    });
+
+    // Phone number validation on form submit
+    document.querySelector('.update-profile-data').addEventListener('submit', function(e) {
+        const phoneInput = document.getElementById('phoneNumber');
+        const phonePattern = /^\+94\s[0-9]{9}$/;
+        
+        // Remove space for validation check
+        const phoneValue = phoneInput.value.replace(/\s/g, '');
+        const phonePatternNoSpace = /^\+94[0-9]{9}$/;
+        
+        if (!phonePatternNoSpace.test(phoneValue)) {
+            e.preventDefault();
+            alert('Please enter a valid Sri Lankan phone number: +94 followed by a space and 9 digits (e.g., +94 771234567)');
+            phoneInput.focus();
+            return false;
+        }
+    });
+
     // Password validation
     document.getElementById('passwordForm').addEventListener('submit', function(e) {
+        const currentPassword = document.getElementById('current-password').value;
         const newPassword = document.getElementById('new-password').value;
         const confirmPassword = document.getElementById('confirm-password').value;
         const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        
+        if (!currentPassword) {
+            e.preventDefault();
+            alert('Please enter your current password for verification.');
+            return;
+        }
         
         if (!passwordPattern.test(newPassword)) {
             e.preventDefault();
@@ -488,7 +237,7 @@
     });
 
     // Add interactive effects
-    document.querySelectorAll('.input-group input').forEach(input => {
+    document.querySelectorAll('.input-group input:not([readonly])').forEach(input => {
         input.addEventListener('focus', function() {
             this.parentElement.style.transform = 'translateX(5px)';
         });
@@ -496,6 +245,30 @@
         input.addEventListener('blur', function() {
             this.parentElement.style.transform = 'translateX(0)';
         });
+    });
+
+    // Auto-focus on verification password field
+    document.addEventListener('DOMContentLoaded', function() {
+        const verifyField = document.getElementById('current-password');
+        if (verifyField) {
+            verifyField.focus();
+        }
+        
+        // Format existing phone number if needed
+        const phoneInput = document.getElementById('phoneNumber');
+        if (phoneInput.value) {
+            let currentValue = phoneInput.value.replace(/\s/g, '');
+            if (currentValue.startsWith('+94') && currentValue.length === 12) {
+                // Format as +94 XXXXXXXX (with space)
+                phoneInput.value = '+94 ' + currentValue.substring(3);
+            } else if (currentValue.startsWith('94') && currentValue.length === 11) {
+                // Format as +94 XXXXXXXX (with space)
+                phoneInput.value = '+94 ' + currentValue.substring(2);
+            } else if (currentValue.length === 9 && !currentValue.startsWith('+94')) {
+                // Assume it's just the 9 digits, add +94 and space
+                phoneInput.value = '+94 ' + currentValue;
+            }
+        }
     });
 </script>
 

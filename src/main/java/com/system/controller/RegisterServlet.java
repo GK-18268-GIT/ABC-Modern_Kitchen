@@ -58,36 +58,27 @@ public class RegisterServlet extends HttpServlet {
                     request.getRequestDispatcher("/WEB-INF/admin/login.jsp").forward(request, response);
                     break;
                 case "adminRegister":
-                	request.getRequestDispatcher("/WEB-INF/admin/registerAdmin.jsp").forward(request, response);
-                	break;
+                    request.getRequestDispatcher("/WEB-INF/admin/registerAdmin.jsp").forward(request, response);
+                    break;
                 case "customerRegister":
-                	request.getRequestDispatcher("/WEB-INF/customer/registerCustomer.jsp").forward(request, response);
-                	break;
+                    request.getRequestDispatcher("/WEB-INF/customer/registerCustomer.jsp").forward(request, response);
+                    break;
                 default:
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "[ERROR] Invalid action!");
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("[Error] An error occurred while processing. Please try again!");
-            request.getRequestDispatcher("/WEB-INF/customer/registerCustomer.jsp").forward(request, response);
+            response.sendRedirect(request.getContextPath() + "/error.jsp");
         }
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         String action = request.getParameter("action");
 
         if (action == null) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "[ERROR] Missing action parameter");
             return;
-        }
-        
-        if(!"customerRegister".equals(action)) {
-        	HttpSession session = request.getSession(false);
-        	if(session == null || "admin".equals(session.getAttribute("role"))) {
-        		response.sendRedirect("access-denied.jsp");
-        		return;
-        	}
         }
 
         try {
@@ -96,45 +87,47 @@ public class RegisterServlet extends HttpServlet {
                     addNewStaffMember(request, response);
                     break;
                 case "adminRegister":
-                	addNewAdmin(request, response);
-                	break;
+                    addNewAdmin(request, response);
+                    break;
                 case "customerRegister":
-                	addNewCustomer(request, response);
-                	break;
+                    addNewCustomer(request, response);
+                    break;
+                default:
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "[ERROR] Invalid action!");
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("[Error] An error occurred while processing. Please try again!");
-            request.setAttribute("error", "An error occurred. Please try again.");
             
+            // Use redirect instead of forward to avoid committed response issues
             if("customerRegister".equals(action)) {
-            	request.getRequestDispatcher("/WEB-INF/customer/registerCustomer.jsp").forward(request, response);
+                response.sendRedirect(request.getContextPath() + "/RegisterServlet?action=customerRegister&error=An error occurred. Please try again.");
             } else {
-            	request.getRequestDispatcher("/WEB-INF/customer/registerStaff.jsp").forward(request, response); 	
+                response.sendRedirect(request.getContextPath() + "/RegisterServlet?action=staffRegister&error=An error occurred. Please try again.");
             }
         }
     }
     
     private String generateTempPassword() {
-    	String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
-    	StringBuilder sb = new StringBuilder();
-    	java.util.Random random = new java.util.Random();
-    	
-    	sb.append("ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(random.nextInt(26)));
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+        StringBuilder sb = new StringBuilder();
+        java.util.Random random = new java.util.Random();
+        
+        sb.append("ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(random.nextInt(26)));
         sb.append("abcdefghijklmnopqrstuvwxyz".charAt(random.nextInt(26)));
         sb.append("0123456789".charAt(random.nextInt(10)));
         sb.append("!@#$%".charAt(random.nextInt(5)));
         
         for(int i = 4; i < 12; i++ ) {
-        	sb.append(chars.charAt(random.nextInt(chars.length())));
+            sb.append(chars.charAt(random.nextInt(chars.length())));
         }
         
         char[] passwordArray = sb.toString().toCharArray();
         for(int i = passwordArray.length - 1; i > 0; i--) {
-        	int j = random.nextInt(i + 1);
-        	char temp = passwordArray[i];
-        	passwordArray[i] = passwordArray[j];
-        	passwordArray[j] = temp;
+            int j = random.nextInt(i + 1);
+            char temp = passwordArray[i];
+            passwordArray[i] = passwordArray[j];
+            passwordArray[j] = temp;
         }
         
         return new String(passwordArray);
@@ -146,13 +139,17 @@ public class RegisterServlet extends HttpServlet {
         String email = request.getParameter("email");
         String phoneNumber = request.getParameter("phone-number");
 
+        // Add country code to phone number
+        String fullPhoneNumber = "+94 " + phoneNumber;
+
         String applicationPath = request.getServletContext().getRealPath("");
         String filePath = null;
 
         // Handle file upload
         Part filePart = request.getPart("profile-picture");
-        String fileName = filePart.getSubmittedFileName();
+        String fileName = null;
         if (filePart != null && filePart.getSize() > 0) {
+            fileName = filePart.getSubmittedFileName();
             String extension = fileName.substring(fileName.lastIndexOf("."));
             fileName = System.currentTimeMillis() + "_" + name.replace(" ", "_") + extension;
             filePath = UPLOAD_DIR + fileName;
@@ -166,7 +163,7 @@ public class RegisterServlet extends HttpServlet {
 
         String emailPattern = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
 
-        if (name == null || email == null || address == null || phoneNumber == null || filePath == null) {
+        if (name == null || email == null || address == null || phoneNumber == null) {
             request.setAttribute("error", "Required fields are missing.");
             request.getRequestDispatcher("/WEB-INF/admin/registerStaff.jsp").forward(request, response);
             return;
@@ -181,183 +178,172 @@ public class RegisterServlet extends HttpServlet {
         String tempPassword = generateTempPassword();
         String hashedPassword = BCrypt.hashpw(tempPassword, BCrypt.gensalt(12));
         
-        Staff staff = new Staff(name, filePath, email, hashedPassword, address, phoneNumber, null, currentTime, currentTime);
+        Staff staff = new Staff(name, filePath, email, hashedPassword, address, fullPhoneNumber, null, currentTime, currentTime);
 
         boolean isSuccess = authenticationDao.addNewStaffMember(staff, hashedPassword);
         if (isSuccess) {
-        	
-        	EmailUtil.sendCredentials(email, name, tempPassword, "staff");
-        	request.setAttribute("success", "Staff member registered successfully! Credentials sent via email.");
-        	request.getRequestDispatcher("/WEB-INF/admin/staffList.jsp").forward(request, response);
-        } else {
-        	request.setAttribute("error", "Registration failed. Email may already exist.");
-            if (filePath != null) {
-                new File(applicationPath + File.separator + filePath).delete(); // Cleanup on failure
-            }
-        }
-
-        request.getRequestDispatcher("/WEB-INF/admin/registerStaff.jsp").forward(request, response);
-
-        System.out.println("[DEBUG] Received Parameters:");
-        System.out.println("[DEBUG] Name: " + name);
-        System.out.println("[DEBUG] Address: " + address);
-        System.out.println("[DEBUG] Email: " + email);
-        System.out.println("[DEBUG] Phone Number: " + phoneNumber);
-        System.out.println("[DEBUG] Profile Picture Path: " + filePath);
-    }
-    
-    private void addNewAdmin(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	String name = request.getParameter("name");
-        String address = request.getParameter("address");
-        String email = request.getParameter("email");
-        String phoneNumber = request.getParameter("phone-number");
-
-        String applicationPath = request.getServletContext().getRealPath("");
-        String filePath = null;
-
-        // Handle file upload
-        Part filePart = request.getPart("profile-picture");
-        String fileName = filePart.getSubmittedFileName();
-        if (filePart != null && filePart.getSize() > 0) {
-            String extension = fileName.substring(fileName.lastIndexOf("."));
-            fileName = System.currentTimeMillis() + "_" + name.replace(" ", "_") + extension;
-            filePath = UPLOAD_DIR + fileName;
-
-            File uploadFile = new File(applicationPath + File.separator + filePath);
-            uploadFile.getParentFile().mkdirs();
-            filePart.write(uploadFile.getAbsolutePath());
-        }
-
-        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-
-        String emailPattern = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
-
-        if (name == null || email == null || address == null || phoneNumber == null || filePath == null) {
-            request.setAttribute("error", "Required fields are missing.");
-            request.getRequestDispatcher("/WEB-INF/admin/registerStaff.jsp").forward(request, response);
+            EmailUtil.sendCredentials(email, name, tempPassword, "staff");
+            
+            // Use redirect instead of forward to avoid committed response issues
+            HttpSession session = request.getSession();
+            session.setAttribute("success", "Staff member registered successfully! Credentials sent via email.");
+            response.sendRedirect(request.getContextPath() + "/AdminServlet?action=staffList");
             return;
-        }
-
-        if (!email.matches(emailPattern)) {
-            request.setAttribute("error", "Invalid email format");
-            request.getRequestDispatcher("/WEB-INF/admin/registerStaff.jsp").forward(request, response);
-            return;
-        }
-
-        String tempPassword = generateTempPassword();
-        String hashedPassword = BCrypt.hashpw(tempPassword, BCrypt.gensalt(12));
-        
-        Admin admin = new Admin(name, filePath, email, hashedPassword, address, phoneNumber, null, currentTime, currentTime);
-
-        boolean isSuccess = authenticationDao.addNewAdmin(admin, hashedPassword);
-        if (isSuccess) {
-        	EmailUtil.sendCredentials(email, name, tempPassword, "admin");
-        	request.setAttribute("success", "Admin registered successfully! Credentials sent via email.");
-        	request.getRequestDispatcher("/WEB-INF/admin/adminList.jsp").forward(request, response);
         } else {
             request.setAttribute("error", "Registration failed. Email may already exist.");
             if (filePath != null) {
                 new File(applicationPath + File.separator + filePath).delete(); // Cleanup on failure
             }
-
+            request.getRequestDispatcher("/WEB-INF/admin/registerStaff.jsp").forward(request, response);
+            return;
         }
-	    request.getRequestDispatcher("/WEB-INF/admin/registerAdmin.jsp").forward(request, response);
-	
-	    System.out.println("[DEBUG] Received Parameters:");
-	    System.out.println("[DEBUG] Name: " + name);
-	    System.out.println("[DEBUG] Address: " + address);
-	    System.out.println("[DEBUG] Email: " + email);
-	    System.out.println("[DEBUG] Phone Number: " + phoneNumber);
-	    System.out.println("[DEBUG] Profile Picture Path: " + filePath);
+    }
     
+    private void addNewAdmin(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String name = request.getParameter("name");
+        String address = request.getParameter("address");
+        String email = request.getParameter("email");
+        String phoneNumber = request.getParameter("phone-number");
+
+        // Add country code to phone number
+        String fullPhoneNumber = "+94 " + phoneNumber;
+
+        String applicationPath = request.getServletContext().getRealPath("");
+        String filePath = null;
+
+        // Handle file upload
+        Part filePart = request.getPart("profile-picture");
+        String fileName = null;
+        if (filePart != null && filePart.getSize() > 0) {
+            fileName = filePart.getSubmittedFileName();
+            String extension = fileName.substring(fileName.lastIndexOf("."));
+            fileName = System.currentTimeMillis() + "_" + name.replace(" ", "_") + extension;
+            filePath = UPLOAD_DIR + fileName;
+
+            File uploadFile = new File(applicationPath + File.separator + filePath);
+            uploadFile.getParentFile().mkdirs();
+            filePart.write(uploadFile.getAbsolutePath());
+        }
+
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+
+        String emailPattern = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
+
+        if (name == null || email == null || address == null || phoneNumber == null) {
+            request.setAttribute("error", "Required fields are missing.");
+            request.getRequestDispatcher("/WEB-INF/admin/registerAdmin.jsp").forward(request, response);
+            return;
+        }
+
+        if (!email.matches(emailPattern)) {
+            request.setAttribute("error", "Invalid email format");
+            request.getRequestDispatcher("/WEB-INF/admin/registerAdmin.jsp").forward(request, response);
+            return;
+        }
+
+        String tempPassword = generateTempPassword();
+        String hashedPassword = BCrypt.hashpw(tempPassword, BCrypt.gensalt(12));
+        
+        Admin admin = new Admin(name, filePath, email, hashedPassword, address, fullPhoneNumber, null, currentTime, currentTime);
+
+        boolean isSuccess = authenticationDao.addNewAdmin(admin, hashedPassword);
+        if (isSuccess) {
+            EmailUtil.sendCredentials(email, name, tempPassword, "admin");
+            
+            // Use redirect instead of forward to avoid committed response issues
+            HttpSession session = request.getSession();
+            session.setAttribute("success", "Admin registered successfully! Credentials sent via email.");
+            response.sendRedirect(request.getContextPath() + "/AdminServlet?action=adminList");
+            return;
+        } else {
+            request.setAttribute("error", "Registration failed. Email may already exist.");
+            if (filePath != null) {
+                new File(applicationPath + File.separator + filePath).delete(); // Cleanup on failure
+            }
+            request.getRequestDispatcher("/WEB-INF/admin/registerAdmin.jsp").forward(request, response);
+            return;
+        }
     }
     
     private void addNewCustomer(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	String name = request.getParameter("name");
-    	String address = request.getParameter("address");
-    	String email = request.getParameter("email");
-    	String phoneNumber = request.getParameter("phone-number");
-    	String password = request.getParameter("password");
-    	String confirmPassword = request.getParameter("confirmpassword");
-    	
-    	String applicationPath = request.getServletContext().getRealPath("");
-    	String filePath = null;
-    	
-    	// Handle file upload
-    	Part filePart = request.getPart("profile-picture");
-    	String fileName = filePart.getSubmittedFileName();
-    	if (filePart != null && filePart.getSize() > 0) {
-    		String extension = fileName.substring(fileName.lastIndexOf("."));
-    		fileName = System.currentTimeMillis() + "_" + name.replace(" ", "_") + extension;
-    		filePath = UPLOAD_DIR + fileName;
-    		
-    		File uploadFile = new File(applicationPath + File.separator + filePath);
-    		uploadFile.getParentFile().mkdirs();
-    		filePart.write(uploadFile.getAbsolutePath());
-    	}
-    	
-    	Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-    	
-    	String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
-    	String emailPattern = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
-    	
-    	if (name == null || email == null || password == null || address == null || phoneNumber == null || filePath == null) {
-    		request.setAttribute("error", "Required fields are missing.");
-    		request.getRequestDispatcher("/WEB-INF/admin/registerCustomer.jsp").forward(request, response);
-    		return;
-    	}
-    	
-    	if (!email.matches(emailPattern)) {
-    		request.setAttribute("error", "Invalid email format");
-    		request.getRequestDispatcher("/WEB-INF/customer/registerCustomer.jsp").forward(request, response);
-    		return;
-    	}
-    	
-    	if (!password.matches(passwordPattern)) {
-    		request.setAttribute("error", "Password must contain at least 8 characters, including a number and an uppercase letter!");
-    		request.getRequestDispatcher("/WEB-INF/customer/registerCustomer.jsp").forward(request, response);
-    		return;
-    	}
-    	
-    	if (!password.equals(confirmPassword)) {
-    		request.setAttribute("error", "Passwords do not match!");
-    		request.getRequestDispatcher("/WEB-INF/customer/registerCustomer.jsp").forward(request, response);
-    		return;
-    	}
-    	
-    	String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
-    	Customer customer = new Customer(name, filePath, email, hashedPassword, address, phoneNumber, null, currentTime, currentTime);
-    	
-    	boolean isSuccess = authenticationDao.addNewCustomer(customer, hashedPassword);
-    	if (isSuccess) {
-    		
-    		HttpSession session = request.getSession();
-        	session.setAttribute("username", email);
-        	session.setAttribute("role", "customer");
-        	session.setAttribute("customer", customer);
-        	session.setAttribute("customerName", name);	
-    		
-    		EmailUtil.sendWelcomeEmail(email, name, "customer");
-    		request.setAttribute("success", "Customer registered successfully! Credentials sent via email.");
-    		response.sendRedirect(request.getContextPath() + "/DashboardServlet?role=customer");
-    		return;
-    	} else {
-    		request.setAttribute("error", "Registration failed. Email may already exist.");
-    		if (filePath != null) {
-    			new File(applicationPath + File.separator + filePath).delete(); // Cleanup on failure
-    		}
-    		
-    	}
-    	request.getRequestDispatcher("/WEB-INF/dashboard/registerCustomer.jsp").forward(request, response);
-    	
-    	System.out.println("[DEBUG] Received Parameters:");
-    	System.out.println("[DEBUG] Name: " + name);
-    	System.out.println("[DEBUG] Address: " + address);
-    	System.out.println("[DEBUG] Email: " + email);
-    	System.out.println("[DEBUG] Phone Number: " + phoneNumber);
-    	System.out.println("[DEBUG] Profile Picture Path: " + filePath);
-    	
+        String name = request.getParameter("name");
+        String address = request.getParameter("address");
+        String email = request.getParameter("email");
+        String phoneNumber = request.getParameter("phone-number");
+        String password = request.getParameter("password");
+        String confirmPassword = request.getParameter("confirmpassword");
+        
+        // Add country code to phone number
+        String fullPhoneNumber = "+94 " + phoneNumber;
+        
+        String applicationPath = request.getServletContext().getRealPath("");
+        String filePath = null;
+        
+        // Handle file upload
+        Part filePart = request.getPart("profile-picture");
+        String fileName = null;
+        if (filePart != null && filePart.getSize() > 0) {
+            fileName = filePart.getSubmittedFileName();
+            String extension = fileName.substring(fileName.lastIndexOf("."));
+            fileName = System.currentTimeMillis() + "_" + name.replace(" ", "_") + extension;
+            filePath = UPLOAD_DIR + fileName;
+            
+            File uploadFile = new File(applicationPath + File.separator + filePath);
+            uploadFile.getParentFile().mkdirs();
+            filePart.write(uploadFile.getAbsolutePath());
+        }
+        
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+        
+        String passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
+        String emailPattern = "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$";
+        
+        if (name == null || email == null || password == null || address == null || phoneNumber == null) {
+            request.setAttribute("error", "Required fields are missing.");
+            request.getRequestDispatcher("/WEB-INF/customer/registerCustomer.jsp").forward(request, response);
+            return;
+        }
+        
+        if (!email.matches(emailPattern)) {
+            request.setAttribute("error", "Invalid email format");
+            request.getRequestDispatcher("/WEB-INF/customer/registerCustomer.jsp").forward(request, response);
+            return;
+        }
+        
+        if (!password.matches(passwordPattern)) {
+            request.setAttribute("error", "Password must contain at least 8 characters, including a number and an uppercase letter!");
+            request.getRequestDispatcher("/WEB-INF/customer/registerCustomer.jsp").forward(request, response);
+            return;
+        }
+        
+        if (!password.equals(confirmPassword)) {
+            request.setAttribute("error", "Passwords do not match!");
+            request.getRequestDispatcher("/WEB-INF/customer/registerCustomer.jsp").forward(request, response);
+            return;
+        }
+        
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt(12));
+        Customer customer = new Customer(name, filePath, email, hashedPassword, address, fullPhoneNumber, null, currentTime, currentTime);
+        
+        boolean isSuccess = authenticationDao.addNewCustomer(customer, hashedPassword);
+        if (isSuccess) {
+            HttpSession session = request.getSession();
+            session.setAttribute("username", email);
+            session.setAttribute("role", "customer");
+            session.setAttribute("customer", customer);
+            session.setAttribute("customerName", name);    
+            
+            EmailUtil.sendWelcomeEmail(email, name, "customer");
+            session.setAttribute("success", "Customer registered successfully! Welcome to ABC Modern Kitchen.");
+            response.sendRedirect(request.getContextPath() + "/DashboardServlet?role=customer");
+            return;
+        } else {
+            request.setAttribute("error", "Registration failed. Email may already exist.");
+            if (filePath != null) {
+                new File(applicationPath + File.separator + filePath).delete(); // Cleanup on failure
+            }
+            request.getRequestDispatcher("/WEB-INF/customer/registerCustomer.jsp").forward(request, response);
+            return;
+        }
     }
-    
 }
-

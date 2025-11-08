@@ -11,6 +11,11 @@ public class Admin extends User {
 	private Timestamp createdAt;
 	private Timestamp updatedAt;
 	
+	  public Admin() {
+	        super();
+	    }
+	
+	
 	public Admin(String name, String profilePicture, String email, String password, String address, 
 			String phoneNumber, String adminId, Timestamp createdAt, Timestamp updatedAt) {
 		super(email, password);

@@ -98,6 +98,14 @@ public class LoginServlet extends HttpServlet {
                         session.setAttribute("customerName", name);
                     }
                     
+                    if("admin".equals(role)) {
+                    	session.setAttribute("adminName", name);
+                    }
+                    
+                    if("staff".equals(role)) {
+                    	session.setAttribute("staffName", name);
+                    }
+                    
                     String redirectUrl = request.getContextPath() + "/DashboardServlet";
 
                     // For iframe break-out - return HTML with JavaScript to break out of iframe

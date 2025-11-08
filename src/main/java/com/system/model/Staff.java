@@ -11,6 +11,10 @@ public class Staff extends User {
 	private Timestamp createdAt;
 	private Timestamp updatedAt;
 	
+	public Staff() {
+		super();
+	}
+	
 	public Staff(String name, String profilePicture, String email, String password, String address, 
 			String phoneNumber, String staffId, Timestamp createdAt, Timestamp updatedAt) {
 		super(email, password);

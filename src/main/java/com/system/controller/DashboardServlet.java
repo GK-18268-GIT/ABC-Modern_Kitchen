@@ -30,7 +30,7 @@ public class DashboardServlet extends HttpServlet {
 			dashBoardPage = "/WEB-INF/dashboard/staffDashboard.jsp";
 			break;
 		case "customer": 
-			dashBoardPage = "/WEB-INF/dashboard/customerDashboard.jsp";
+			dashBoardPage = "/WEB-INF/dashboard/adminDashboard.jsp";
 			break;
 		default:
 			response.sendRedirect(request.getContextPath() + "/index.jsp");

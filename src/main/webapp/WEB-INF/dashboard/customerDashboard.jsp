@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.*" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -57,7 +57,7 @@
             <div class="navigation-cards">
                 <!-- Take Away Card -->
                 <div class="navigate-card takeaway">
-                    <a href="<%= request.getContextPath() %>/CustomerServlet?action=takeAway" class="navigate-button">
+                    <a href="${pageContext.request.contextPath}/CustomerServlet?action=takeAway" class="navigate-button">
                         <div class="button-icon">
                             <i class="fas fa-utensils"></i>
                         </div>
@@ -73,7 +73,7 @@
                 
                 <!-- Dine In Reservation Card -->
                 <div class="navigate-card dinein">
-                    <a href="<%= request.getContextPath() %>/CustomerServlet?action=dineIn" class="navigate-button">
+                    <a href="${pageContext.request.contextPath}/CustomerServlet?action=dineIn" class="navigate-button">
                         <div class="button-icon">
                             <i class="fas fa-calendar-check"></i>
                         </div>
@@ -87,25 +87,9 @@
                     </a>
                 </div>
                 
-                <!-- My Reservations Card -->
-                <div class="navigate-card reservations">
-                    <a href="<%= request.getContextPath() %>/CustomerServlet?action=viewReservations" class="navigate-button">
-                        <div class="button-icon">
-                            <i class="fas fa-list-alt"></i>
-                        </div>
-                        <div class="button-content">
-                            <h3>My Reservations</h3>
-                            <p>View and manage your existing table reservations</p>
-                        </div>
-                        <div class="button-arrow">
-                            <i class="fas fa-chevron-right"></i>
-                        </div>
-                    </a>
-                </div>
-                
                 <!-- My Profile Card -->
                 <div class="navigate-card profile">
-                    <a href="<%= request.getContextPath() %>/CustomerServlet?action=myCustomerProfile" class="navigate-button">
+                    <a href="${pageContext.request.contextPath}/CustomerServlet?action=myProfile" class="navigate-button">
                         <div class="button-icon">
                             <i class="fas fa-user"></i>
                         </div>
@@ -144,11 +128,11 @@
                     <p>ABC Modern Kitchen Customer</p>
                 </div>
                 <form action="<%= request.getContextPath() %>/LoginServlet" method="POST">
-                    <input type="hidden" name="action" value="logOutUser">
-                    <button type="submit" class="logout-btn">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </form>
+				    <input type="hidden" name="action" value="logOutUser">
+				    <button type="submit" class="logout-btn">
+				        <i class="fas fa-sign-out-alt"></i> Logout
+				    </button>
+				</form>
             </div>
         </div>
     </div>
@@ -164,11 +148,6 @@
                 this.style.transform = 'translateY(0)';
             });
         });
-
-        // Debug info
-        console.log("Customer Dashboard Loaded");
-        console.log("Customer Name: <%= customerName %>");
-        console.log("Context Path: <%= request.getContextPath() %>");
     </script>
 </body>
 </html>

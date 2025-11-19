@@ -58,14 +58,9 @@
                     <div class="success-message">${success}</div>
                 </c:if>
                
-               <div class="form-links">
-				    <p class="forgot-password">
-				        <a href="<%= request.getContextPath() %>/LoginServlet?action=showForgotPasswordForm">Forgot Password?</a>
-				    </p>
-				    <p class="register-link">Don't have an account? 
-				        <a href="<%= request.getContextPath() %>/RegisterServlet?action=customerRegister">Sign Up</a> 
-				    </p>
-			   </div>
+               <p class="register-link">Don't have an account? 
+                 <a href="LoginServlet?action=loginUser">Sign Up</a>
+               </p>
             </form>
         </div>
     </div>

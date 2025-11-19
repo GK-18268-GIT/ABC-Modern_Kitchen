@@ -57,7 +57,7 @@
             <div class="navigation-cards">
                 <!-- Take Away Card -->
                 <div class="navigate-card takeaway">
-                    <a href="<%= request.getContextPath() %>/StaffServlet?action=manageDishes" class="navigate-button">
+                    <a href="${pageContext.request.contextPath}/StaffServlet?action=" class="navigate-button">
                         <div class="button-icon">
                             <i class="fas fa-utensils"></i>
                         </div>
@@ -73,7 +73,7 @@
                 
                 <!-- Dine In Reservation Card -->
                 <div class="navigate-card dinein">
-                    <a href="<%= request.getContextPath() %>/StaffServlet?action=confirmReservation" class="navigate-button">
+                    <a href="${pageContext.request.contextPath}/StaffServlet?action=" class="navigate-button">
                         <div class="button-icon">
                             <i class="fas fa-calendar-check"></i>
                         </div>
@@ -89,7 +89,7 @@
                 
                 <!-- My Profile Card -->
                 <div class="navigate-card profile">
-                    <a href="<%= request.getContextPath() %>/StaffServlet?action=myStaffProfile" class="navigate-button">
+                    <a href="${pageContext.request.contextPath}/StaffServlet?action=myProfile" class="navigate-button">
                         <div class="button-icon">
                             <i class="fas fa-user"></i>
                         </div>

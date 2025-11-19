@@ -56,7 +56,7 @@
                
                <div class="form-links">
                    <p>Remember your password? 
-                     <a href="${pageContext.request.contextPath}/LoginServlet">Back to Login</a>
+                     <a href="<%= request.getContextPath() %>/LoginServlet?action=showLoginForm">Back to Login</a>
                    </p>
                </div>
             </form>

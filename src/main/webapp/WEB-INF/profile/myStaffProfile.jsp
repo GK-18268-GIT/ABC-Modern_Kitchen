@@ -11,30 +11,28 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/myAdminProfile.css">
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/myStaffProfile.css">
 
 </head>
 <body>
 
-<div class="myProfile-container">
-    <!-- Left Column - Image Section -->
-    <div class="img-section">
-        <img src="https://img.freepik.com/premium-photo/small-business-owner-working-his-cafe_484651-11545.jpg?semt=ais_hybrid&w=740&q=80" alt="Admin Profile">
+<div class = "myProfile-container">
+	<div class="img-section">
+        <img src="https://img.freepik.com/premium-photo/small-business-owner-working-his-cafe_484651-11545.jpg?semt=ais_hybrid&w=740&q=80" alt="Staff Profile">
         <div class="img-overlay">
             <h1>ABC Modern Kitchen</h1>
             <p>MY PROFILE PORTAL</p>
             <div class="welcome-text">
                 <%
-                    String adminName = (String) session.getAttribute("adminName");
-                    if(adminName != null) {
-                        out.print("Welcome " + adminName + "!");
+                    String staffName = (String) session.getAttribute("staffName");
+                    if(staffName != null) {
+                        out.print("Welcome " + staffName + "!");
                     }
                 %>
             </div>
         </div>
     </div>
     
-    <!-- Right Column - Content Section -->
     <div class="content-section">
         <div class="content-header">
             <h1>My Profile</h1>
@@ -55,16 +53,16 @@
         <% } %>
         
         <div class="input-fields">
-            <form action="<%= request.getContextPath() %>/AdminServlet" class="update-profile-data" method="POST" enctype="multipart/form-data">
-                <input type="hidden" name="action" value="updateAdminProfile">
+            <form action="<%= request.getContextPath() %>/StaffServlet" class="update-profile-data" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="updateStaffProfile">
                 
                 <!-- Profile Picture Preview -->
                 <div class="profile-picture-preview">
                     <%
-                        String profilePic = (String) request.getAttribute("adminProfilePic");
+                        String profilePic = (String) request.getAttribute("staffProfilePic");
                         String profilePicPath = profilePic != null && !profilePic.isEmpty() ? 
                             request.getContextPath() + "/" + profilePic : 
-                            request.getContextPath() + "/assets/profiles/default-admin.jpg";
+                            request.getContextPath() + "/assets/profiles/default-staff.jpg";
                     %>
                     <img id="profilePreview" src="<%= profilePicPath %>" alt="Profile Preview">
                 </div>
@@ -72,7 +70,7 @@
                 <div class="input-group">
                     <label for="name">Full Name</label>
                     <input type="text" id="name" name="name" placeholder="John Doe" required 
-                           value="<%= request.getAttribute("adminName") != null ? request.getAttribute("adminName") : "" %>">
+                           value="<%= request.getAttribute("staffName") != null ? request.getAttribute("staffName") : "" %>">
                 </div>
 
                 <div class="input-group">
@@ -83,13 +81,13 @@
                 <div class="input-group">
                     <label for="email">Email Address</label>
                     <input type="email" id="email" name="email" placeholder="john.doe@example.com" required readonly
-                           value="<%= request.getAttribute("adminEmail") != null ? request.getAttribute("adminEmail") : "" %>">
+                           value="<%= request.getAttribute("staffEmail") != null ? request.getAttribute("staffEmail") : "" %>">
                 </div>
 
                 <div class="input-group">
                     <label for="address">Address</label>
                     <input type="text" id="address" name="address" placeholder="No.123, Main Street" required
-                           value="<%= request.getAttribute("adminAddress") != null ? request.getAttribute("adminAddress") : "" %>">
+                           value="<%= request.getAttribute("staffAddress") != null ? request.getAttribute("staffAddress") : "" %>">
                 </div>
 
                 <div class="input-group">
@@ -99,7 +97,7 @@
                            pattern="\+94\s[0-9]{9}" 
                            title="Phone number must start with +94 followed by a space and 9 digits (e.g., +94 771234567)"
                            required
-                           value="<%= request.getAttribute("adminPhone") != null ? request.getAttribute("adminPhone") : "" %>">
+                           value="<%= request.getAttribute("staffPhone") != null ? request.getAttribute("staffPhone") : "" %>">
                     <small>Format: +94 followed by a space and 9 digits (e.g., +94 771234567)</small>
                 </div>
 
@@ -111,7 +109,7 @@
             <!-- Separate Form for Password Change -->
             <div class="Change-password">
                 <h3><i class="fas fa-lock"></i> Change Password</h3>
-                <form action="<%= request.getContextPath() %>/AdminServlet" method="POST" id="passwordForm">
+                <form action="<%= request.getContextPath() %>/StaffServlet" method="POST" id="passwordForm">
                     <input type="hidden" name="action" value="changeMyPassword">
                     
                     <div class="input-group">
@@ -264,6 +262,6 @@
         }
     });
 </script>
-
+    
 </body>
 </html>

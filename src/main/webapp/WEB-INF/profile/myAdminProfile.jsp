@@ -115,6 +115,13 @@
                     <input type="hidden" name="action" value="changeMyPassword">
                     
                     <div class="input-group">
+                        <label for="current-password-display">Current Password (System Generated)</label>
+                        <input type="text" id="current-password-display" name="current-password-display" 
+                               value="********" readonly style="background-color: #f8f9fa; color: #6c757d;">
+                        <small>This is your system-generated temporary password. You cannot change this field.</small>
+                    </div>
+                    
+                    <div class="input-group">
                         <label for="current-password">Verify Current Password</label>
                         <input type="password" id="current-password" name="current-password" placeholder="Enter your current password to verify" required>
                     </div>

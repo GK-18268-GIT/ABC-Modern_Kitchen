@@ -120,7 +120,7 @@ public class AdminServlet extends HttpServlet {
 		} catch(Exception e) {
 			e.printStackTrace();
 			request.setAttribute("error", "An error occurred: " + e.getMessage());
-            request.getRequestDispatcher("/WEB-INF/profile/myAdminProfile.jsp").forward(request, response);
+            request.getRequestDispatcher("/WEB-INF/dashboard/adminDashboard.jsp").forward(request, response);
 		}
 		
 	}
@@ -316,7 +316,7 @@ public class AdminServlet extends HttpServlet {
 			System.out.println("[ERROR] Error changing password " + e.getMessage());
 		}
 		
-		request.getRequestDispatcher("/WEB-INF/profile/myAdminProfile.jsp").forward(request, response);
+		request.getRequestDispatcher("/WEB-INF/profile/myStaffProfile.jsp").forward(request, response);
 		
 	}
 	

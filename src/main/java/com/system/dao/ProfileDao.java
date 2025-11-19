@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import com.system.model.Admin;
+import com.system.model.Customer;
 import com.system.model.Staff;
 import com.system.utils.DBConnectionFactory;
 
@@ -70,6 +71,33 @@ public class ProfileDao {
         }
     }
     
+    public Customer getCustomerById(String email) throws SQLException {
+    	String query = "SELECT name, email, address, phone_number, profile_picture, customer_id, created_at, "
+    			+ "updated_at FROM users WHERE email = ? AND role = 'customer'";
+    	
+    	try(Connection conn = DBConnectionFactory.getConnection();
+    			PreparedStatement ps = conn.prepareStatement(query)) {
+    		
+    		ps.setString(1, email);
+    		ResultSet rs = ps.executeQuery();
+    		
+    		if(rs.next()) {
+    			Customer customer = new Customer();
+    			customer.setName(rs.getString("name"));
+    			customer.setProfilePicture(rs.getString("profile_picture"));
+    			customer.setEmail(rs.getString("email"));
+    			customer.setAddress(rs.getString("address"));
+    			customer.setPhoneNumber(rs.getString("phone_number"));
+    			customer.setCustomerId(rs.getString("customer_id"));
+    			customer.setCreatedAt(rs.getTimestamp("created_at"));
+    			customer.setUpdatedAt(rs.getTimestamp("updated_at"));
+    			return customer;
+    		}
+    		
+    		return null;
+    	}
+    }
+    
     public boolean updateAdminProfile(String email, String name, String address, String phoneNumber) throws SQLException {
         String query = "UPDATE users SET name = ?, address = ?, phone_number = ?, updated_at = ? WHERE email = ? AND role = 'admin'";
         
@@ -100,6 +128,21 @@ public class ProfileDao {
         }    
     }
     
+    public boolean updateCustomerProfile(String email, String name, String address, String phoneNumber) throws SQLException {
+    	String query = "UPDATE users SET name = ?, address = ?, phone_number = ?, updated_at = ? WHERE email = ? AND role = 'customer'";
+    	
+    	try(Connection conn = DBConnectionFactory.getConnection();
+    			PreparedStatement ps = conn.prepareStatement(query)) {
+    		ps.setString(1, name);
+    		ps.setString(2, address);
+    		ps.setString(3, phoneNumber);
+    		ps.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+    		ps.setString(5, email);
+    		
+    		return ps.executeUpdate() > 0;
+    	}    
+    }
+    
     public boolean updateAdminProfilePicture(String email, String profilePicture) throws SQLException {
         String query = "UPDATE users SET profile_picture = ?, updated_at = ? WHERE email = ? AND role = 'admin'";
         
@@ -126,6 +169,19 @@ public class ProfileDao {
         }
     }
     
+    public boolean updateCustomerProfilePicture(String email, String profilePicture) throws SQLException {
+    	String query = "UPDATE users SET profile_picture = ?, updated_at = ? WHERE email = ? AND role = 'customer'";
+    	
+    	try(Connection conn = DBConnectionFactory.getConnection();
+    			PreparedStatement ps = conn.prepareStatement(query)) {
+    		ps.setString(1, profilePicture);
+    		ps.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+    		ps.setString(3, email);
+    		
+    		return ps.executeUpdate() > 0;
+    	}
+    }
+    
     public boolean changeAdminPassword(String email, String newHashPassword) throws SQLException {
         String query = "UPDATE users SET password = ?, updated_at = ? WHERE email = ? AND role = 'admin'";
         
@@ -137,6 +193,32 @@ public class ProfileDao {
             
             return ps.executeUpdate() > 0;
         }
+    }
+    
+    public boolean changeStaffPassword(String email, String newHashPassword) throws SQLException {
+    	String query = "UPDATE users SET password = ?, updated_at = ? WHERE email = ? AND role = 'staff'";
+    	
+    	try(Connection conn = DBConnectionFactory.getConnection();
+    			PreparedStatement ps = conn.prepareStatement(query)) {
+    		ps.setString(1, newHashPassword);
+    		ps.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+    		ps.setString(3, email);
+    		
+    		return ps.executeUpdate() > 0;
+    	}
+    }
+    
+    public boolean changeCustomerPassword(String email, String newHashPassword) throws SQLException {
+    	String query = "UPDATE users SET password = ?, updated_at = ? WHERE email = ? AND role = 'customer'";
+    	
+    	try(Connection conn = DBConnectionFactory.getConnection();
+    			PreparedStatement ps = conn.prepareStatement(query)) {
+    		ps.setString(1, newHashPassword);
+    		ps.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+    		ps.setString(3, email);
+    		
+    		return ps.executeUpdate() > 0;
+    	}
     }
     
     public String getAdminPasswordHashed(String email) throws SQLException {
@@ -171,6 +253,22 @@ public class ProfileDao {
         }
     }
     
+    public String getCustomerPasswordHashed(String email) throws SQLException {
+    	String query = "SELECT password FROM users WHERE email = ? AND role = 'customer'";
+    	
+    	try(Connection conn = DBConnectionFactory.getConnection();
+    			PreparedStatement ps = conn.prepareStatement(query)) {
+    		ps.setString(1, email);
+    		ResultSet rs = ps.executeQuery();
+    		
+    		if(rs.next()) {
+    			return rs.getString("password");
+    		}
+    		
+    		return null;
+    	}
+    }
+    
     public boolean adminExists(String email) throws SQLException {
         String query = "SELECT COUNT(*) FROM users WHERE email = ? AND role = 'admin'";
         
@@ -201,5 +299,21 @@ public class ProfileDao {
             
             return false;
         }
+    }
+    
+    public boolean customerExists(String email) throws SQLException {
+    	String query = "SELECT COUNT(*) FROM users WHERE email = ? AND role = 'customer'";
+    	
+    	try(Connection conn = DBConnectionFactory.getConnection();
+    			PreparedStatement ps = conn.prepareStatement(query)) {
+    		ps.setString(1, email);
+    		ResultSet rs = ps.executeQuery();
+    		
+    		if(rs.next()) {
+    			return rs.getInt(1) > 0;
+    		}
+    		
+    		return false;
+    	}
     }
 }

@@ -297,7 +297,7 @@ public class AuthenticationDao {
 	    }
 	    return administrator;
 	}
-
+	
 	
 }
 

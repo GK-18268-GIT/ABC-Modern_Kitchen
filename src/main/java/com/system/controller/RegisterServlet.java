@@ -332,6 +332,7 @@ public class RegisterServlet extends HttpServlet {
             session.setAttribute("role", "customer");
             session.setAttribute("customer", customer);
             session.setAttribute("customerName", name);    
+            session.setAttribute("email", email);    
             
             EmailUtil.sendWelcomeEmail(email, name, "customer");
             session.setAttribute("success", "Customer registered successfully! Welcome to ABC Modern Kitchen.");

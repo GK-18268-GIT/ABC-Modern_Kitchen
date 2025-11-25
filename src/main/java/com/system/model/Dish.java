@@ -3,7 +3,7 @@ package com.system.model;
 import java.sql.Timestamp;
 
 public class Dish {
-    private int id;
+    private int dishId;
     private String dishCode;
     private String category;
     private String name;
@@ -48,8 +48,8 @@ public class Dish {
     }
     
     //For single size(For updating dishes)
-    public Dish(int id, String category, String name, String size, Double price, String imagePath, boolean isAvailable) {
-    	this.id = id;
+    public Dish(int dishId, String category, String name, String size, Double price, String imagePath, boolean isAvailable) {
+    	this.dishId = dishId;
     	this.category = category;
     	this.name= name;
     	this.size = size;
@@ -65,8 +65,8 @@ public class Dish {
     }
     
     //For both size(For updating dishes)
-    public Dish(int id, String category, String name, String size, Double priceN, Double priceL, String imagePath, boolean isAvailable) {
-    	this.id = id;
+    public Dish(int dishId, String category, String name, String size, Double priceN, Double priceL, String imagePath, boolean isAvailable) {
+    	this.dishId = dishId;
     	this.category = category;
     	this.name = name;
     	this.size = size;
@@ -77,8 +77,8 @@ public class Dish {
     }
     
     //Full constructors
-    public Dish(int id, String dishCode, String category, String name, String size, Double priceN, Double priceL, String imagePath, boolean isAvailable) {
-    	this.id = id;
+    public Dish(int dishId, String dishCode, String category, String name, String size, Double priceN, Double priceL, String imagePath, boolean isAvailable) {
+    	this.dishId = dishId;
     	this.dishCode = dishCode;
     	this.category = category;
     	this.name = name;
@@ -89,8 +89,8 @@ public class Dish {
     	this.isAvailable = isAvailable;
     }
 
-	public int getId() { return id; }
-	public void setId(int id) { this.id = id; }
+	public int getId() { return dishId; }
+	public void setId(int dishId) { this.dishId = dishId; }
 
 	public String getDishCode() { return dishCode; }
 	public void setDishCode(String dishCode) { this.dishCode = dishCode; }

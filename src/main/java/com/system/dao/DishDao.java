@@ -50,7 +50,7 @@ public class DishDao {
 
 	public boolean updateDish(Dish dish) throws SQLException {
 		String query = "UPDATE dishes SET category = ?, name = ?, size = ?, normal_price = ?, large_price = ?, image_path = ?, "
-				+ "is_available = ?, updated_at = ? WHERE id = ?";
+				+ "is_available = ?, updated_at = ? WHERE dishId = ?";
 
 		try (Connection conn = DBConnectionFactory.getConnection();
 				PreparedStatement ps = conn.prepareStatement(query)) {
@@ -80,14 +80,14 @@ public class DishDao {
 		}
 	}
 
-	public boolean deleteDish(int id) throws SQLException {
-		String query = "UPDATE dishes SET is_available = false, updated_at = ? WHERE id = ? ";
+	public boolean deleteDish(int dishId) throws SQLException {
+		String query = "UPDATE dishes SET is_available = false, updated_at = ? WHERE dishId = ? ";
 
 		try (Connection conn = DBConnectionFactory.getConnection();
 				PreparedStatement ps = conn.prepareStatement(query)) {
 
 			ps.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
-			ps.setInt(2, id);
+			ps.setInt(2, dishId);
 
 			return ps.executeUpdate() > 0;
 		}
@@ -103,7 +103,7 @@ public class DishDao {
 
 			while (rs.next()) {
 				Dish dish = new Dish();
-				dish.setId(rs.getInt("id"));
+				dish.setId(rs.getInt("dishId"));
 				dish.setDishCode(rs.getString("dish_code"));
 				dish.setCategory(rs.getString("category"));
 				dish.setName(rs.getString("name"));
@@ -145,17 +145,17 @@ public class DishDao {
 		return categories;
 	}
 
-	public Dish getDishById(int id) throws SQLException {
-		String query = "SELECT * FROM dishes WHERE id = ?";
+	public Dish getDishById(int dishId) throws SQLException {
+		String query = "SELECT * FROM dishes WHERE dishId = ?";
 
 		try (Connection conn = DBConnectionFactory.getConnection();
 				PreparedStatement ps = conn.prepareStatement(query)) {
 
-			ps.setInt(1, id);
+			ps.setInt(1, dishId);
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					Dish dish = new Dish();
-					dish.setId(rs.getInt("id"));
+					dish.setId(rs.getInt("dishId"));
 					dish.setDishCode(rs.getString("dish_code"));
 					dish.setCategory(rs.getString("category"));
 					dish.setName(rs.getString("name"));
@@ -250,7 +250,8 @@ public class DishDao {
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					Dish dish = new Dish();
-					dish.setId(rs.getInt("id"));
+					dish.setId(rs.getInt("dishId"));
+					dish.setDishCode(rs.getString("dish_code"));
 					dish.setCategory(rs.getString("category"));
 					dish.setName(rs.getString("name"));
 					dish.setSize(rs.getString("size"));
